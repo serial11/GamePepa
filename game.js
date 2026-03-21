@@ -1,0 +1,194 @@
+// game.js
+import theme from "./theme.js";
+import { createPlayer, movePlayer } from "./player.js";
+import { fireBullet, updateBullets } from "./bullet.js";
+import { createEnemy, updateEnemies, enemyReachedBottom, getEnemySpeed, getSpawnInterval } from "./enemy.js";
+
+const CANVAS_WIDTH  = 480;
+const CANVAS_HEIGHT = 640;
+
+const canvas       = document.getElementById("game-canvas");
+const ctx          = canvas.getContext("2d");
+const overlay      = document.getElementById("overlay");
+const finalScoreEl = document.getElementById("final-score");
+
+// Image loading — resolves to null on failure (triggers fallback rendering)
+function loadImage(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload  = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function drawEntity(img, fallbackColor, x, y, w, h) {
+  if (img instanceof HTMLImageElement) {
+    ctx.drawImage(img, x, y, w, h);
+  } else {
+    ctx.fillStyle = fallbackColor;
+    ctx.fillRect(x, y, w, h);
+  }
+}
+
+// Game state
+let state             = "playing";
+let score             = 0;
+let difficultyLevel   = 0;
+let spawnFrameCounter = 0;
+let animFrameId       = null;
+let player     = null;
+let bullets    = [];
+let enemies    = [];
+let explosions = [];
+const keys = {};
+let images = {};
+
+// Wire restart button only after images are loaded to avoid race condition
+async function init() {
+  [images.player, images.enemy, images.bullet] = await Promise.all([
+    loadImage(theme.playerImage),
+    loadImage(theme.enemyImage),
+    loadImage(theme.bulletImage),
+  ]);
+  document.getElementById("restart-btn").addEventListener("click", resetGame);
+  resetGame();
+}
+
+function resetGame() {
+  score             = 0;
+  difficultyLevel   = 0;
+  spawnFrameCounter = 0;
+  player     = createPlayer();
+  bullets    = [];
+  enemies    = [];
+  explosions = [];
+  state      = "playing";
+  overlay.classList.remove("visible");
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  animFrameId = requestAnimationFrame(loop);
+}
+
+// Input
+document.addEventListener("keydown", e => {
+  keys[e.code] = true;
+  if (e.code === "Space" && state === "playing" && player) {
+    e.preventDefault();
+    fireBullet(bullets, player);
+  }
+});
+document.addEventListener("keyup", e => { keys[e.code] = false; });
+
+// Game loop
+function loop() {
+  if (state === "playing") update();
+  draw();
+  animFrameId = requestAnimationFrame(loop);
+}
+
+function update() {
+  difficultyLevel = Math.floor(score / 10);
+  movePlayer(player, keys);
+  bullets = updateBullets(bullets);
+
+  // Spawn enemies
+  spawnFrameCounter++;
+  if (spawnFrameCounter >= getSpawnInterval(difficultyLevel)) {
+    spawnFrameCounter = 0;
+    const enemy = createEnemy(getEnemySpeed(difficultyLevel), enemies);
+    if (enemy) enemies.push(enemy);
+  }
+
+  updateEnemies(enemies);
+
+  // Collision: bullet vs enemy (guard both hit sets to prevent double-counting)
+  const hitBullets = new Set();
+  const hitEnemies = new Set();
+  for (let bi = 0; bi < bullets.length; bi++) {
+    if (hitBullets.has(bi)) continue;
+    for (let ei = 0; ei < enemies.length; ei++) {
+      if (hitEnemies.has(ei)) continue;
+      if (aabb(bullets[bi], enemies[ei])) {
+        hitBullets.add(bi);
+        hitEnemies.add(ei);
+        score++;
+        explosions.push({ x: enemies[ei].x + 24, y: enemies[ei].y + 24, frame: 0 });
+      }
+    }
+  }
+  bullets  = bullets.filter((_, i) => !hitBullets.has(i));
+  enemies  = enemies.filter((_, i) => !hitEnemies.has(i));
+
+  // Update explosions
+  for (const ex of explosions) ex.frame++;
+  explosions = explosions.filter(ex => ex.frame <= 20);
+
+  // Game over
+  if (enemyReachedBottom(enemies, CANVAS_HEIGHT)) {
+    state = "game-over";
+    finalScoreEl.textContent = `${theme.scoreLabel}: ${score}`;
+    overlay.classList.add("visible");
+  }
+}
+
+function aabb(a, b) {
+  return a.x < b.x + b.width  &&
+         a.x + a.width  > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+function draw() {
+  ctx.fillStyle = theme.backgroundColor;
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  drawEntity(images.player, "#FF69B4", player.x, player.y, player.width, player.height);
+
+  for (const b of bullets) {
+    drawEntity(images.bullet, "#FFFF00", b.x, b.y, b.width, b.height);
+  }
+
+  for (const e of enemies) {
+    drawEntity(images.enemy, "#8B4513", e.x, e.y, e.width, e.height);
+  }
+
+  ctx.save();
+  for (const ex of explosions) {
+    const radius = 32 * (ex.frame / 20);
+    ctx.beginPath();
+    ctx.arc(ex.x, ex.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = theme.explosionColor;
+    ctx.fill();
+  }
+  ctx.restore();
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 16px sans-serif";
+  ctx.fillText(`${theme.scoreLabel}: ${score}`, 8, 20);
+}
+
+// Canvas scaling — gameplay stays in 480×640; canvas scales visually via CSS.
+// The restart button is an HTML element inside the scaled wrapper, so its
+// click events work without coordinate transformation.
+function applyScale() {
+  const scale   = Math.min(window.innerWidth / CANVAS_WIDTH, window.innerHeight / CANVAS_HEIGHT);
+  const wrapper = canvas.parentElement;
+  wrapper.style.transform       = `scale(${scale})`;
+  wrapper.style.transformOrigin = "top left";
+  wrapper.style.left            = `${(window.innerWidth  - CANVAS_WIDTH  * scale) / 2}px`;
+  wrapper.style.top             = `${(window.innerHeight - CANVAS_HEIGHT * scale) / 2}px`;
+}
+window.addEventListener("resize", applyScale);
+applyScale();
+
+// Tab visibility — only resume loop if still in playing state
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    cancelAnimationFrame(animFrameId);
+  } else if (state === "playing") {
+    spawnFrameCounter = 0;
+    animFrameId = requestAnimationFrame(loop);
+  }
+});
+
+init();
