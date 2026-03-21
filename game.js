@@ -3,6 +3,7 @@ import theme from "./theme.js";
 import { createPlayer, movePlayer } from "./player.js";
 import { fireBullet, updateBullets } from "./bullet.js";
 import { createEnemy, updateEnemies, enemyReachedBottom, getEnemySpeed, getSpawnInterval } from "./enemy.js";
+import { saveScore, getTopN } from "./leaderboard.js";
 
 const CANVAS_WIDTH  = 480;
 const CANVAS_HEIGHT = 640;
@@ -44,6 +45,9 @@ let explosions = [];
 const keys = {};
 const images = {};
 
+let currentPlayerName = "";
+let lastSavedIndex    = -1;
+
 // Wire restart button only after images are loaded to avoid race condition
 async function init() {
   [images.player, images.enemy, images.bullet] = await Promise.all([
@@ -51,8 +55,23 @@ async function init() {
     loadImage(theme.enemyImage),
     loadImage(theme.bulletImage),
   ]);
+
+  const nameInput   = document.getElementById("name-input");
+  const playBtn     = document.getElementById("play-btn");
+
+  nameInput.addEventListener("input", () => {
+    playBtn.disabled = nameInput.value.trim() === "";
+  });
+  document.getElementById("play-btn").addEventListener("click", submitName);
+  nameInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") submitName();
+  });
   document.getElementById("restart-btn").addEventListener("click", resetGame);
-  resetGame();
+  document.getElementById("leaderboard-btn").addEventListener("click", showLeaderboard);
+  document.getElementById("leaderboard-close-btn").addEventListener("click", hideLeaderboard);
+
+  state = "name-entry";
+  document.getElementById("name-overlay").classList.add("visible");
 }
 
 function resetGame() {
@@ -65,8 +84,17 @@ function resetGame() {
   explosions = [];
   state      = "playing";
   overlay.classList.remove("visible");
+  document.getElementById("leaderboard-overlay").classList.remove("visible");
   if (animFrameId) cancelAnimationFrame(animFrameId);
   animFrameId = requestAnimationFrame(loop);
+}
+
+function submitName() {
+  const name = document.getElementById("name-input").value.trim();
+  if (!name) return;
+  currentPlayerName = name;
+  document.getElementById("name-overlay").classList.remove("visible");
+  resetGame();
 }
 
 // Input
