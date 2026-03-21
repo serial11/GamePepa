@@ -89,6 +89,39 @@ function resetGame() {
   animFrameId = requestAnimationFrame(loop);
 }
 
+function renderTop3(savedIndex) {
+  const list    = document.getElementById("top3-list");
+  const entries = getTopN(3);
+  list.innerHTML = entries.map((e, i) => {
+    const cls = i === savedIndex ? " class=\"current-player\"" : "";
+    return `<li${cls}>${e.name} — ${e.score}</li>`;
+  }).join("");
+}
+
+function showLeaderboard() {
+  const entries  = getTopN(10);
+  const list     = document.getElementById("leaderboard-list");
+  const yourScore = document.getElementById("your-score");
+
+  list.innerHTML = entries.map((e, i) => {
+    const cls = i === lastSavedIndex ? " class=\"current-player\"" : "";
+    return `<li${cls}>${e.name} — ${e.score}</li>`;
+  }).join("");
+
+  if (lastSavedIndex === -1) {
+    yourScore.textContent = `Your score: ${score}`;
+    yourScore.classList.remove("hidden");
+  } else {
+    yourScore.classList.add("hidden");
+  }
+
+  document.getElementById("leaderboard-overlay").classList.add("visible");
+}
+
+function hideLeaderboard() {
+  document.getElementById("leaderboard-overlay").classList.remove("visible");
+}
+
 function submitName() {
   const name = document.getElementById("name-input").value.trim();
   if (!name) return;
@@ -156,7 +189,9 @@ function update() {
   // Game over
   if (enemyReachedBottom(enemies, CANVAS_HEIGHT)) {
     state = "game-over";
+    lastSavedIndex = saveScore(currentPlayerName, score);
     finalScoreEl.textContent = `${theme.scoreLabel}: ${score}`;
+    renderTop3(lastSavedIndex);
     overlay.classList.add("visible");
   }
 }
@@ -192,9 +227,21 @@ function draw() {
   }
   ctx.restore();
 
+  ctx.save();
   ctx.fillStyle = "#fff";
   ctx.font = "bold 16px sans-serif";
+  ctx.textAlign = "left";
   ctx.fillText(`${theme.scoreLabel}: ${score}`, 8, 20);
+  ctx.restore();
+
+  if (currentPlayerName) {
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 16px sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(currentPlayerName, CANVAS_WIDTH - 8, 20);
+    ctx.restore();
+  }
 }
 
 // Canvas scaling — gameplay stays in 480×640; canvas scales visually via CSS.
