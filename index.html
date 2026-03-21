@@ -48,6 +48,98 @@
       font-weight: bold;
     }
     #restart-btn:hover { background: #ff4da6; }
+
+    #name-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      gap: 16px;
+    }
+    #name-overlay.visible { display: flex; }
+    #name-overlay h1 { font-size: 36px; }
+    #name-input {
+      padding: 10px 16px;
+      font-size: 20px;
+      border-radius: 6px;
+      border: 2px solid #FF69B4;
+      outline: none;
+      width: 260px;
+      text-align: center;
+    }
+    #play-btn {
+      padding: 12px 32px;
+      font-size: 20px;
+      background: #FF69B4;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+    }
+    #play-btn:disabled { background: #aaa; cursor: default; }
+    #play-btn:not(:disabled):hover { background: #ff4da6; }
+
+    #top3-list {
+      list-style: none;
+      font-size: 18px;
+      line-height: 1.8;
+      padding: 0;
+    }
+    #top3-list .current-player { color: #FF69B4; font-weight: bold; }
+
+    #leaderboard-btn {
+      padding: 10px 24px;
+      font-size: 18px;
+      background: #87CEEB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #222;
+      font-weight: bold;
+    }
+    #leaderboard-btn:hover { background: #5bb8d4; }
+
+    #leaderboard-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      gap: 12px;
+    }
+    #leaderboard-overlay.visible { display: flex; }
+    #leaderboard-overlay h1 { font-size: 36px; }
+    #leaderboard-list {
+      font-size: 18px;
+      line-height: 1.8;
+      padding-left: 32px;
+      text-align: left;
+    }
+    #leaderboard-list .current-player { color: #FF69B4; font-weight: bold; }
+    #your-score { font-size: 16px; color: #ccc; }
+    #your-score.hidden { display: none; }
+    #leaderboard-close-btn {
+      padding: 10px 24px;
+      font-size: 18px;
+      background: #555;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+    }
+    #leaderboard-close-btn:hover { background: #777; }
   </style>
 </head>
 <body>
@@ -56,7 +148,20 @@
     <div id="overlay">
       <h1>Game Over!</h1>
       <p id="final-score"></p>
+      <ul id="top3-list"></ul>
+      <button id="leaderboard-btn">Leaderboard</button>
       <button id="restart-btn">Restart</button>
+    </div>
+    <div id="name-overlay">
+      <h1>What's your name?</h1>
+      <input type="text" id="name-input" maxlength="20" placeholder="Enter your name" autocomplete="off" />
+      <button id="play-btn" disabled>Play</button>
+    </div>
+    <div id="leaderboard-overlay">
+      <h1>Leaderboard</h1>
+      <ol id="leaderboard-list"></ol>
+      <p id="your-score" class="hidden"></p>
+      <button id="leaderboard-close-btn">Close</button>
     </div>
   </div>
   <script type="module" src="game.js"></script>
