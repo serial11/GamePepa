@@ -42,7 +42,7 @@ let bullets    = [];
 let enemies    = [];
 let explosions = [];
 const keys = {};
-let images = {};
+const images = {};
 
 // Wire restart button only after images are loaded to avoid race condition
 async function init() {
@@ -83,7 +83,9 @@ document.addEventListener("keyup", e => { keys[e.code] = false; });
 function loop() {
   if (state === "playing") update();
   draw();
-  animFrameId = requestAnimationFrame(loop);
+  if (state === "playing") {
+    animFrameId = requestAnimationFrame(loop);
+  }
 }
 
 function update() {
@@ -112,7 +114,7 @@ function update() {
         hitBullets.add(bi);
         hitEnemies.add(ei);
         score++;
-        explosions.push({ x: enemies[ei].x + 24, y: enemies[ei].y + 24, frame: 0 });
+        explosions.push({ x: enemies[ei].x + enemies[ei].width / 2, y: enemies[ei].y + enemies[ei].height / 2, frame: 0 });
       }
     }
   }
