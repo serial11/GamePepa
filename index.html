@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peppa Shooter</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #222;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #canvas-wrapper {
+      position: absolute;
+      width: 480px;
+      height: 640px;
+    }
+    canvas {
+      display: block;
+      width: 480px;
+      height: 640px;
+    }
+    #overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      gap: 16px;
+    }
+    #overlay.visible { display: flex; }
+    #overlay h1 { font-size: 48px; }
+    #overlay p  { font-size: 24px; }
+    #restart-btn {
+      padding: 12px 32px;
+      font-size: 20px;
+      background: #FF69B4;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+    }
+    #restart-btn:hover { background: #ff4da6; }
+  </style>
+</head>
+<body>
+  <div id="canvas-wrapper">
+    <canvas id="game-canvas" width="480" height="640"></canvas>
+    <div id="overlay">
+      <h1>Game Over!</h1>
+      <p id="final-score"></p>
+      <button id="restart-btn">Restart</button>
+    </div>
+  </div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
