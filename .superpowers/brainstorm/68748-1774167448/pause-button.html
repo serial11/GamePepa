@@ -1,0 +1,48 @@
+<h2>Pause Button Placement</h2>
+<p class="subtitle">Where should the pause button live during gameplay on mobile?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="top-right" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;border-radius:8px;padding:12px;display:flex;justify-content:center">
+      <div style="width:90px;height:150px;background:#87CEEB;border-radius:4px;position:relative">
+        <!-- HUD score top left -->
+        <div style="position:absolute;top:5px;left:6px;color:#333;font-size:8px;font-weight:bold">42</div>
+        <!-- pause top right -->
+        <div style="position:absolute;top:4px;right:4px;width:20px;height:20px;background:#00000033;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-size:10px">⏸</div>
+        <!-- player -->
+        <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:14px;height:14px;background:#FF69B4;border-radius:2px"></div>
+        <!-- enemies -->
+        <div style="position:absolute;top:40px;left:20px;width:12px;height:12px;background:#8B4513;border-radius:2px"></div>
+        <div style="position:absolute;top:35px;right:18px;width:12px;height:12px;background:#8B4513;border-radius:2px"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Top-right corner</h3>
+      <p>Standard mobile game convention. Thumb can reach it but won't be hit accidentally during play.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="hud-overlay" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;border-radius:8px;padding:12px;display:flex;justify-content:center">
+      <div style="width:90px;height:150px;background:#87CEEB;border-radius:4px;position:relative">
+        <!-- HUD bar at top -->
+        <div style="position:absolute;top:0;left:0;right:0;height:20px;background:#00000022;display:flex;align-items:center;justify-content:space-between;padding:0 6px;border-radius:4px 4px 0 0">
+          <div style="color:#333;font-size:8px;font-weight:bold">42</div>
+          <div style="color:#333;font-size:8px">Krzysztof</div>
+          <div style="width:16px;height:16px;background:#00000022;border-radius:3px;display:flex;align-items:center;justify-content:center;color:white;font-size:9px">⏸</div>
+        </div>
+        <!-- player -->
+        <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:14px;height:14px;background:#FF69B4;border-radius:2px"></div>
+        <!-- enemies -->
+        <div style="position:absolute;top:50px;left:20px;width:12px;height:12px;background:#8B4513;border-radius:2px"></div>
+        <div style="position:absolute;top:45px;right:18px;width:12px;height:12px;background:#8B4513;border-radius:2px"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>In the HUD bar</h3>
+      <p>Pause sits alongside score and player name in a dedicated top bar. Clean, intentional — harder to hit by accident.</p>
+    </div>
+  </div>
+
+</div>

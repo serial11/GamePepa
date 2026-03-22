@@ -1,5 +1,5 @@
 {
   "appId": "com.serial11.peppashooter",
   "appName": "Peppa Shooter",
-  "webDir": "."
+  "webDir": "www"
 }
