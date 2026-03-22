@@ -69,6 +69,9 @@ async function init() {
   document.getElementById("restart-btn").addEventListener("click", resetGame);
   document.getElementById("leaderboard-btn").addEventListener("click", showLeaderboard);
   document.getElementById("leaderboard-close-btn").addEventListener("click", hideLeaderboard);
+  document.getElementById("resume-btn").addEventListener("click", resumeGame);
+  document.getElementById("quit-btn").addEventListener("click", quitToMenu);
+  document.getElementById("change-name-btn").addEventListener("click", showNameEntry);
 
   state = "name-entry";
   document.getElementById("name-overlay").classList.add("visible");
@@ -122,6 +125,40 @@ function hideLeaderboard() {
   document.getElementById("leaderboard-overlay").classList.remove("visible");
 }
 
+function showNameEntry() {
+  const input = document.getElementById("name-input");
+  input.value = currentPlayerName;
+  input.dispatchEvent(new Event("input")); // re-evaluate play-btn disabled state
+  document.getElementById("overlay").classList.remove("visible");
+  document.getElementById("name-overlay").classList.add("visible");
+}
+
+function pauseGame() {
+  state = "paused";
+  document.getElementById("pause-overlay").classList.add("visible");
+}
+
+function resumeGame() {
+  state = "playing";
+  document.getElementById("pause-overlay").classList.remove("visible");
+  animFrameId = requestAnimationFrame(loop);
+}
+
+function quitToMenu() {
+  if (animFrameId) cancelAnimationFrame(animFrameId); // guard against RAF already queued
+  state             = "name-entry";
+  score             = 0;
+  difficultyLevel   = 0;
+  spawnFrameCounter = 0;
+  player     = null;
+  bullets    = [];
+  enemies    = [];
+  explosions = [];
+  document.getElementById("pause-overlay").classList.remove("visible");
+  document.getElementById("leaderboard-overlay").classList.remove("visible");
+  showNameEntry();
+}
+
 function submitName() {
   const name = document.getElementById("name-input").value.trim();
   if (!name) return;
@@ -136,6 +173,10 @@ document.addEventListener("keydown", e => {
   if (e.code === "Space" && state === "playing" && player) {
     e.preventDefault();
     fireBullet(bullets, player);
+  }
+  if (e.code === "Escape") {
+    if (state === "playing") pauseGame();
+    else if (state === "paused") resumeGame();
   }
 });
 document.addEventListener("keyup", e => { keys[e.code] = false; });
