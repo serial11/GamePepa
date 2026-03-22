@@ -35,7 +35,7 @@ A new `touch.js` module translates touch events into the existing `keys` object 
 - `touchend` — clear `keys.ArrowLeft` and `keys.ArrowRight`
 
 **Tap detection:**
-- On `touchend`, if total movement was `< 10px` (i.e. no swipe), call the fire callback — equivalent to spacebar press
+- On `touchend`, if total movement was `< 5px` (stricter threshold than swipe to avoid accidental fires at the end of short swipes), call the fire callback — equivalent to spacebar press
 
 ### HUD Bar (new HTML element)
 
@@ -52,7 +52,7 @@ A `<div id="hud-bar">` added to `index.html` above the canvas:
 
 **Pause button:**
 - Calls `pauseGame()` when `state === "playing"`, `resumeGame()` when `state === "paused"`
-- Wired in `init()` alongside existing button listeners
+- Event listener wired inside `initTouchControls()` — not in the desktop `init()` path, so it only attaches when the HUD bar is actually shown
 
 ---
 
