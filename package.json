@@ -1,0 +1,28 @@
+{
+  "name": "gamepepa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bullet.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serial11/GamePepa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serial11/GamePepa/issues"
+  },
+  "homepage": "https://github.com/serial11/GamePepa#readme",
+  "dependencies": {
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0"
+  }
+}
