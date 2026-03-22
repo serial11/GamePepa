@@ -4,6 +4,7 @@ import { createPlayer, movePlayer } from "./player.js";
 import { fireBullet, updateBullets } from "./bullet.js";
 import { createEnemy, updateEnemies, enemyReachedBottom, getEnemySpeed, getSpawnInterval } from "./enemy.js";
 import { saveScore, getTopN } from "./leaderboard.js";
+import { initTouchControls, isTouchDevice } from "./touch.js";
 
 const CANVAS_WIDTH  = 480;
 const CANVAS_HEIGHT = 640;
@@ -75,6 +76,13 @@ async function init() {
 
   state = "name-entry";
   document.getElementById("name-overlay").classList.add("visible");
+
+  initTouchControls(
+    canvas,
+    keys,
+    () => { if (state === "playing" && player) fireBullet(bullets, player); }, // player/bullets are module-level vars in game.js
+    () => { if (state === "playing") pauseGame(); else if (state === "paused") resumeGame(); }
+  );
 }
 
 function resetGame() {
@@ -269,20 +277,25 @@ function draw() {
   }
   ctx.restore();
 
-  ctx.save();
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 16px sans-serif";
-  ctx.textAlign = "left";
-  ctx.fillText(`${theme.scoreLabel}: ${score}`, 8, 20);
-  ctx.restore();
-
-  if (currentPlayerName) {
+  if (isTouchDevice) {
+    document.getElementById("hud-score").textContent = `${theme.scoreLabel}: ${score}`;
+    document.getElementById("hud-name").textContent = currentPlayerName;
+  } else {
     ctx.save();
     ctx.fillStyle = "#fff";
     ctx.font = "bold 16px sans-serif";
-    ctx.textAlign = "right";
-    ctx.fillText(currentPlayerName, CANVAS_WIDTH - 8, 20);
+    ctx.textAlign = "left";
+    ctx.fillText(`${theme.scoreLabel}: ${score}`, 8, 20);
     ctx.restore();
+
+    if (currentPlayerName) {
+      ctx.save();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 16px sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(currentPlayerName, CANVAS_WIDTH - 8, 20);
+      ctx.restore();
+    }
   }
 }
 
