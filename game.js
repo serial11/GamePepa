@@ -175,6 +175,7 @@ document.addEventListener("keydown", e => {
     fireBullet(bullets, player);
   }
   if (e.code === "Escape") {
+    e.preventDefault();
     if (state === "playing") pauseGame();
     else if (state === "paused") resumeGame();
   }
