@@ -140,6 +140,54 @@
       color: #fff;
     }
     #leaderboard-close-btn:hover { background: #777; }
+
+    #pause-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      gap: 16px;
+    }
+    #pause-overlay.visible { display: flex; }
+    #pause-overlay h1 { font-size: 48px; }
+    #resume-btn {
+      padding: 12px 32px;
+      font-size: 20px;
+      background: #FF69B4;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+    }
+    #resume-btn:hover { background: #ff4da6; }
+    #quit-btn {
+      padding: 10px 24px;
+      font-size: 18px;
+      background: #555;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+    }
+    #quit-btn:hover { background: #777; }
+    #change-name-btn {
+      padding: 10px 24px;
+      font-size: 18px;
+      background: #87CEEB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #222;
+      font-weight: bold;
+    }
+    #change-name-btn:hover { background: #5bb8d4; }
   </style>
 </head>
 <body>
@@ -150,6 +198,7 @@
       <p id="final-score"></p>
       <ul id="top3-list"></ul>
       <button id="leaderboard-btn">Leaderboard</button>
+      <button id="change-name-btn">Player's Name</button>
       <button id="restart-btn">Restart</button>
     </div>
     <div id="name-overlay">
@@ -162,6 +211,11 @@
       <ol id="leaderboard-list"></ol>
       <p id="your-score" class="hidden"></p>
       <button id="leaderboard-close-btn">Close</button>
+    </div>
+    <div id="pause-overlay">
+      <h1>Paused</h1>
+      <button id="resume-btn">Resume</button>
+      <button id="quit-btn">Quit</button>
     </div>
   </div>
   <script type="module" src="game.js"></script>
