@@ -10,7 +10,7 @@
 Two quality-of-life improvements to the Peppa Pig Shooter:
 
 1. **Pause** — ESC key pauses and resumes the game. The pause screen has a "Quit" button that returns to the name-entry screen.
-2. **Change name** — A "Change name" button on the game-over screen lets the player update their name before starting a new game.
+2. **Change name** — A "Player's Name" button on the game-over screen lets the player update their name before starting a new game.
 
 ---
 
@@ -21,7 +21,7 @@ name-entry → playing ↔ paused
                 ↑           ↓ (Quit)
                 └── restart  ↓
              playing → game-over
-                          ↓ (Change name)
+                          ↓ (Player's Name)
                        name-entry
 ```
 
@@ -35,7 +35,7 @@ Full set of transitions:
 | `paused` | `name-entry` | Quit button |
 | `playing` | `game-over` | Enemy reaches bottom |
 | `game-over` | `playing` | Restart button |
-| `game-over` | `name-entry` | Change name button |
+| `game-over` | `name-entry` | Player's Name button |
 
 ---
 
@@ -45,7 +45,7 @@ Full set of transitions:
 
 | File | Changes |
 | --- | --- |
-| `index.html` | Add `#pause-overlay` HTML + CSS; add "Change name" button to `#overlay` |
+| `index.html` | Add `#pause-overlay` HTML + CSS; add "Player's Name" button to `#overlay` |
 | `game.js` | Add `paused` state handling, ESC key listener, `quitToMenu()`, `showNameEntry()` |
 
 No new files required.
@@ -129,17 +129,17 @@ document.getElementById("quit-btn").addEventListener("click", quitToMenu);
 
 ## Change Name Feature
 
-### "Change name" button on `#overlay`
+### "Player's Name" button on `#overlay`
 
 Added between the existing `#leaderboard-btn` and `#restart-btn`:
 
 ```html
-<button id="change-name-btn">Change name</button>
+<button id="change-name-btn">Player's Name</button>
 ```
 
 ### `showNameEntry()`
 
-Shared helper used by both "Change name" and `quitToMenu()`. Pre-fills the name input with the current name so the player can edit rather than retype:
+Shared helper used by both "Player's Name" and `quitToMenu()`. Pre-fills the name input with the current name so the player can edit rather than retype:
 
 ```js
 function showNameEntry() {
@@ -175,7 +175,7 @@ Already hides `#overlay` and `#leaderboard-overlay`. No changes needed.
 | ESC during `game-over` | Ignored |
 | Quit with empty name in input | `submitName()` guards against it — Play button stays disabled |
 | Leaderboard open when Quit pressed | `quitToMenu()` hides `#leaderboard-overlay` explicitly (see `quitToMenu()` code above) |
-| Change name then immediately Restart (no name entered) | Not possible — Play button is disabled until input is non-empty |
+| Player's Name then immediately Restart (no name entered) | Not possible — Play button is disabled until input is non-empty |
 | Tab hidden while paused | Already handled: `visibilitychange` only restarts RAF when `state === "playing"` |
 
 ---
@@ -245,7 +245,7 @@ Manual playtest checklist:
 - [ ] Quit button from pause returns to name-entry screen
 - [ ] Name input pre-filled with previous name on Quit
 - [ ] Submitting name from post-Quit name screen starts a new game
-- [ ] "Change name" button appears on game-over screen
+- [ ] "Player's Name" button appears on game-over screen
 - [ ] Clicking it shows name-entry overlay with current name pre-filled
 - [ ] Submitting new name starts a new game with updated name in HUD
 - [ ] ESC during `name-entry` and `game-over` does nothing
